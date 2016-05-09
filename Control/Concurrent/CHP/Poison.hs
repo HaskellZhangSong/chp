@@ -30,7 +30,7 @@
 module Control.Concurrent.CHP.Poison where
 
 import Control.Concurrent.STM
-
+import Control.Monad
 -- | A Maybe-like poison wrapper.
 data WithPoison a = PoisonItem | NoPoison a deriving (Eq, Show)
 
@@ -43,6 +43,10 @@ instance Monad WithPoison where
   PoisonItem >>= _ = PoisonItem
   NoPoison x >>= f = f x
 
+instance Applicative WithPoison where
+  pure = return
+  (<*>) = ap
+  
 mergeWithPoison :: [WithPoison a] -> WithPoison ()
 mergeWithPoison = sequence_
 
